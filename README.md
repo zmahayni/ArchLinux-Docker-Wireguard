@@ -36,7 +36,7 @@
     fdisk /dev/vda
 ```
 
-5. Format the root partition tot eh Ext4 file system and the boot partition to the FAT32 system using the commands:
+5. Format the root partition to the Ext4 file system and the boot partition to the FAT32 system using the commands:
 ```Bash
    mkfs.ext4 /dev/vda2
    mkfs.fat -F 32 /dev/vda1
