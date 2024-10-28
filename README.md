@@ -9,7 +9,7 @@
     shasum -a 256 filename
 ```
    
-3. Open UTM and create a VM with the iso you downloaded. Give appropriate RAM and memory. Change the architecture to x86_64 and make sure the UEFI_boot setting is on.
+3. Open UTM and create a VM with the iso you downloaded. Give appropriate RAM and memory. Change the architecture to x86_64 and make sure the UEFI_boot setting is on. (I had to first turn the UEFI_boot setting off, then on the next boot I had turn it back on. I don't know why, but it ended up working)
 
 
 ## Arch Setup
