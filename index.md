@@ -219,3 +219,88 @@
    alias vi=vim
    alias update='sudo pacman -Syu'
 ```
+
+
+# Docker
+
+1. Install Docker, confirm using command:
+```Bash
+   docker compose version
+```
+
+2. I followed this [guide](//www.youtube.com/watch?v=gEceSAJI_3s)
+
+3. Make a Docker-Wordpress Folder
+
+4. Create a "docker-compose.yml" file and paste the following code:
+```Bash
+   version: "3.1"
+
+services: 
+  database:
+    mem_limit: 2048m
+    image: mariadb:10.6.4-focal
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+    volumes:
+        - db_data:/var/lib/mysql
+    networks:
+      - wordpress-network
+
+
+  phpmyadmin:
+    depends_on:
+      - database
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    env_file: .env
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+    networks:
+      - wordpress-network
+
+
+  wordpress:
+    depends_on:
+      - database
+    image: wordpress:6.2.2-apache
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    env_file: .env
+    environment:
+      WORDPRESS_DB_HOST: database:3306
+      WORDPRESS_DB_USER: '${MYSQL_USER}'
+      WORDPRESS_DB_PASSWORD: '${MYSQL_PASSWORD}'
+      WORDPRESS_DB_NAME: '${MYSQL_DATABASE}'
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - wordpress-network
+
+volumes:
+  db_data:
+  
+networks:
+  wordpress-network:
+    driver: bridge
+```
+5. Create a .env file and paste the following:
+```Bash
+MYSQL_DATABASE=wordpress
+MYSQL_USER=wp_user
+MYSQL_PASSWORD=wp_password
+MYSQL_ROOT_PASSWORD=root_password
+```
+
+6. Open a browser and navigate to **http://localhost:8080/**. Fill in the prompted information and you are done!
