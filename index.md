@@ -304,3 +304,80 @@
 ```
 
 6. Open a browser and navigate to **http://localhost:8080/**. Fill in the prompted information and you are done!
+
+# Wireguard Project
+
+## Digital Ocean Account
+Go to [link](https://m.do.co/c/4d7f4ff9cfe4) and create an account with 200$ credit. Create a droplet with an Ubuntu image. Choose the closest data center. Choose the $6/month option and the basic CPU option. Set a password and create the droplet.
+
+## Install Docker and Wireguard
+Navigate to the droplet, and go to Access. Set up a console and run the following commands to install Docker. 
+
+```Bash
+sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo    image: linuxserver/wireguard
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Hong_Kong
+      - SERVERURL=1.2.3.4
+      - SERVERPORT=51820
+      - PEERS=pc1,pc2,phone1
+      - PEERDNS=auto
+      - INTERNAL_SUBNET=10.0.0.0
+    ports:
+      - 51820:51820/udp
+    volumes:
+      - type: bind
+        source: ./config/
+        target: /config/
+      - type: bind
+        source: /lib/modules
+        target: /lib/modules
+    restart: always
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+
+cd ~/wireguard/
+docker-compose up -d
+```
+
+## Check on Phone
+
+Install the Wireguard App on your phone. Run the following command: 
+```Bash
+docker-compose logs -f wireguard
+```
+Scan the QR code with the Wireguard App. On your phone, check your IP by opening up **IPLeak.net** on a browser. Then, turn on the VPN and navigate to the same website. 
+
+## Check on Laptop
+Navigate to the correct directory
+```Bash
+cd ~/wireguard/config/peer_pc1/
+```
+Open the **peer_pc1.conf** file and copy the contents. Create a new .conf file with the copied contents. Install Wireguard on your laptop and import the new .conf file. Navigate to **IPLeak.net** before and after turning on the VPN.  add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+apt-cache policy docker-ce
+sudo apt install docker-ce -y
+sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+Run the following commands to set up Wireguard. When creating the .yml file, change your timezone and serer url. Make the server url the IP address shown in the droplet. 
+
+```Bash
+mkdir -p ~/wireguard/
+mkdir -p ~/wireguard/config/
+nano ~/wireguard/docker-compose.yml
+
+version: '3.8'
+services:
+  wireguard:
+    container_name: wireguard
