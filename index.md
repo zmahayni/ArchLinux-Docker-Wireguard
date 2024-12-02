@@ -311,12 +311,28 @@
 Go to [link](https://m.do.co/c/4d7f4ff9cfe4) and create an account with 200$ credit. Create a droplet with an Ubuntu image. Choose the closest data center. Choose the $6/month option and the basic CPU option. Set a password and create the droplet.
 
 ## Install Docker and Wireguard
-Navigate to the droplet, and go to Access. Set up a console and run the following commands to install Docker. 
+Navigate to the droplet, and go to Access. Set up a console and run the following commands to install Docker and Wireguard. When creating the **.yml** file, change TZ to your timezone, and SERVERURL to the droplet's IP address.
 
 ```Bash
 sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo    image: linuxserver/wireguard
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+apt-cache policy docker-ce
+sudo apt install docker-ce -y
+sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+mkdir -p ~/wireguard/
+mkdir -p ~/wireguard/config/
+
+nano ~/wireguard/docker-compose.yml
+version: '3.8'
+services:
+  wireguard:
+    container_name: wireguard
+    image: linuxserver/wireguard
     environment:
       - PUID=1000
       - PGID=1000
@@ -359,25 +375,20 @@ Navigate to the correct directory
 ```Bash
 cd ~/wireguard/config/peer_pc1/
 ```
-Open the **peer_pc1.conf** file and copy the contents. Create a new .conf file with the copied contents. Install Wireguard on your laptop and import the new .conf file. Navigate to **IPLeak.net** before and after turning on the VPN.  add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
+Open the **peer_pc1.conf** file and copy the contents. Create a new .conf file with the copied contents. Install Wireguard on your laptop and import the new .conf file. Navigate to **IPLeak.net** before and after turning on the VPN.  
 
-apt-cache policy docker-ce
-sudo apt install docker-ce -y
-sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-```
+## Laptop Screenshots
+![Imgur](https://i.imgur.com/MKEYicL.png)
+Before VPN:
+![Imgur](https://i.imgur.com/TGKPFdZ.png)
+After VPN:
+![Imgur](https://i.imgur.com/dr39ejy.png)
 
-Run the following commands to set up Wireguard. When creating the .yml file, change your timezone and serer url. Make the server url the IP address shown in the droplet. 
+## Phone Screenshots
+![Imgur](https://i.imgur.com/qSjskXB.png)
+Before VPN:
+![Imgur](https://i.imgur.com/49k0eiu.png)
+After VPN:
+![Imgur](https://i.imgur.com/qBArMrJ.png)
 
-```Bash
-mkdir -p ~/wireguard/
-mkdir -p ~/wireguard/config/
-nano ~/wireguard/docker-compose.yml
 
-version: '3.8'
-services:
-  wireguard:
-    container_name: wireguard
